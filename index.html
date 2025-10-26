@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гардероб Планировщик</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Заголовок и Навигация -->
+    <header class="header">
+        <div class="header-container">
+            <h1 class="header-title">
+                Гардероб Планировщик
+            </h1>
+            <nav class="header-nav">
+                <a href="#catalog" class="nav-link">Каталог</a>
+                <a href="#outfits" class="nav-link">Комбинации</a>
+                <a href="#gallery" class="nav-link">Галерея</a>
+                <a href="#shopping" class="nav-link">Шопинг-лист</a>
+            </nav>
+            <button class="mobile-menu-button">
+                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Основное Содержимое -->
+    <main class="main-content">
+        <!-- Секция: Каталог Гардероба -->
+        <section id="catalog" class="section catalog-section">
+            <h2 class="section-title">
+                Каталог Гардероба
+            </h2>
+            <p class="section-description">
+                Выберите категорию, чтобы увидеть все вещи и добавить новые.
+            </p>
+
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="category-image category-outerwear">
+                        <span class="category-label">Верхняя одежда</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image category-sweaters">
+                         <span class="category-label">Свитеры</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image category-tshirts">
+                         <span class="category-label">Футболки</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image category-jeans">
+                         <span class="category-label">Джинсы / Брюки</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image category-shoes">
+                         <span class="category-label">Обувь</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image category-accessories">
+                        <span class="category-label">Аксессуары и Сумки</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Секция: Рекомендации по Комбинациям -->
+        <section id="outfits" class="section outfits-section">
+            <h2 class="section-title">
+                Идеи Комбинаций
+            </h2>
+            <p class="section-description">
+                Рекомендации по созданию стильных образов на основе вашего гардероба.
+            </p>
+
+            <div class="outfits-grid">
+                <div class="outfit-card">
+                    <div class="outfit-image">
+                        Образ: Джинсы + Рубашка
+                    </div>
+                    <h3 class="outfit-title">Повседневный Стиль</h3>
+                    <p class="outfit-status">Готов к носке</p>
+                    <button class="btn btn-primary">Посмотреть детали</button>
+                </div>
+                <div class="outfit-card">
+                    <div class="outfit-image">
+                        Образ: Платье + Пальто
+                    </div>
+                    <h3 class="outfit-title">Вечерний Выход</h3>
+                    <p class="outfit-season">Сезон: Осень</p>
+                    <button class="btn btn-secondary">Редактировать</button>
+                </div>
+                <div class="outfit-card">
+                    <div class="outfit-image">
+                        Образ: Спортивный Костюм
+                    </div>
+                    <h3 class="outfit-title">Для Тренировок</h3>
+                    <p class="outfit-type">Тип: Спорт</p>
+                    <button class="btn btn-secondary">Редактировать</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Секция: Фотогалерея -->
+        <section id="gallery" class="section gallery-section">
+            <h2 class="section-title">
+                Фотогалерея Образов
+            </h2>
+            <p class="section-description">
+                Здесь сохраняются ваши любимые и удачные комбинации.
+            </p>
+
+            <div class="gallery-grid">
+                <div class="gallery-image gallery-komb1"></div>
+                <div class="gallery-image gallery-komb2"></div>
+                <div class="gallery-image gallery-komb3"></div>
+                <div class="gallery-image gallery-komb4"></div>
+                <div class="gallery-image gallery-komb5"></div>
+                <div class="gallery-image gallery-komb6"></div>
+            </div>
+        </section>
+
+        <!-- Секция: Шопинг-лист -->
+        <section id="shopping" class="section shopping-section">
+            <h2 class="section-title">
+                Шопинг-лист
+            </h2>
+            <p class="section-description">
+                Список вещей, которые нужно купить, чтобы дополнить гардероб.
+            </p>
+
+            <div class="shopping-grid">
+                <div class="shopping-card">
+                    <div class="shopping-item">
+                        <div class="shopping-image">
+                            Фото
+                        </div>
+                        <div class="shopping-details">
+                            <p class="shopping-name">Белая рубашка (классика)</p>
+                            <p class="shopping-store">Магазин: Zara / Massimo Dutti</p>
+                            <p class="shopping-category">Категория: Верх</p>
+                        </div>
+                        <button class="delete-button">
+                             <svg class="delete-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                             </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="shopping-card">
+                    <div class="shopping-item">
+                        <div class="shopping-image">
+                            Фото
+                        </div>
+                        <div class="shopping-details">
+                            <p class="shopping-name">Теплый шарф (бежевый)</p>
+                            <p class="shopping-store">Магазин: H&M / 12 Storeez</p>
+                            <p class="shopping-category">Категория: Аксессуары</p>
+                        </div>
+                        <button class="delete-button">
+                             <svg class="delete-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                             </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shopping-input">
+                <input type="text" placeholder="Название вещи..." class="shopping-input-field">
+                <input type="text" placeholder="Магазин или ссылка..." class="shopping-input-field store-input">
+                <button class="btn btn-primary shopping-add-button">
+                    Добавить в список
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p class="footer-text">&copy; 2025 Гардероб Планировщик. Все права защищены.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
