@@ -5,7 +5,8 @@ import {
   initialClothingItems,
   outfits,
   galleryImages,
-  shoppingList
+  shoppingList,
+  seasons 
 } from './mock/wardrobe-data.js';
 
 const model = new WardrobeModel();
@@ -16,6 +17,7 @@ model.setClothingItems(initialClothingItems);
 model.setOutfits(outfits);
 model.setGalleryImages(galleryImages);
 model.setShoppingList(shoppingList);
+model.setSeasons(seasons); 
 
 const presenter = new WardrobePresenter(model);
 const appContainer = document.querySelector('#app');
