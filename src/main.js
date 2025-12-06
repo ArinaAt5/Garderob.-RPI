@@ -6,7 +6,7 @@ import {
   outfits,
   galleryImages,
   shoppingList,
-  seasons 
+  seasons,
 } from './mock/wardrobe-data.js';
 
 const model = new WardrobeModel();

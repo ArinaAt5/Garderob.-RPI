@@ -3,15 +3,12 @@ import { createElement } from '../framework/render.js';
 const createOutfitTemplate = (outfit) => `
   <div class="outfit-card">
     <div class="outfit-image">
-      ${outfit.description}
+      ${outfit.imageUrl ? `<img src="${outfit.imageUrl}" alt="${outfit.title}" class="outfit-img">` : outfit.description || ''}
     </div>
     <h3 class="outfit-title">${outfit.title}</h3>
     ${outfit.status ? `<p class="outfit-status">${outfit.status}</p>` : ''}
     ${outfit.season ? `<p class="outfit-season">Сезон: ${outfit.season}</p>` : ''}
     ${outfit.type ? `<p class="outfit-type">Тип: ${outfit.type}</p>` : ''}
-    <button class="btn ${outfit.status ? 'btn-primary' : 'btn-secondary'}">
-      ${outfit.status ? 'Посмотреть детали' : 'Редактировать'}
-    </button>
   </div>
 `;
 

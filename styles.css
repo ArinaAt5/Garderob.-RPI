@@ -1240,3 +1240,16 @@ body {
         background-repeat: no-repeat;
     }
 }
+.outfit-image {
+  width: 50%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.outfit-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

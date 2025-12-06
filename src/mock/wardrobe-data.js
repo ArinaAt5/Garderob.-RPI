@@ -63,30 +63,34 @@ export const initialClothingItems = [
     color: 'бежевый',
     season: 'зима',
     image: 'https://i.pinimg.com/1200x/49/12/bb/4912bb1645ea03a22757c26d6487660a.jpg'
-  },
-
+  }
 ];
 
 export const outfits = [
   {
-    description: 'Образ: Джинсы + Рубашка',
-    title: 'Повседневный Стиль',
-    status: 'Готов к носке'
+    id: 1,
+    title: 'Джинсы + Рубашка',
+    imageUrl: '/images/outfits/outfit1.jpg',
+    status: 'Готов к носке',
+    description: 'Повседневный Стиль'
   },
   {
-    description: 'Образ: Платье + Пальто',
-    title: 'Вечерний Выход',
-    season: 'Осень'
+    id: 2,
+    title: 'Платье + Пальто',
+    imageUrl: '/images/outfits/outfit2.jpg',
+    season: 'Осень',
+    description: 'Вечерний Выход'
   },
   {
-    description: 'Образ: Спортивный Костюм',
-    title: 'Для Тренировок',
-    type: 'Спорт'
+    id: 3,
+    title: 'Спортивный Костюм',
+    imageUrl: '/images/outfits/outfit3.jpg',
+    type: 'Спорт',
+    description: 'Для Тренировок'
   }
 ];
 
 export const galleryImages = Array(6).fill({});
-
 
 export const seasons = [
   { id: 'all', name: 'Все сезоны' },
@@ -95,6 +99,7 @@ export const seasons = [
   { id: 'spring-autumn', name: 'Весна-Осень' },
   { id: 'all-season', name: 'Всесезонные' }
 ];
+
 export const shoppingList = [
   {
     id: 1,
