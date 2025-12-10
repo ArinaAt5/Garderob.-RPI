@@ -1,6 +1,5 @@
 import Observable from '../framework/observable.js';
 
-
 export default class WardrobeModel extends Observable {
   constructor() {
     super();
@@ -9,9 +8,8 @@ export default class WardrobeModel extends Observable {
     this._filteredClothingItems = [];
     this._outfits = [];
     this._galleryImages = [];
-    this._shoppingList = [];
-    this._seasons = []; 
-    this._shoppingList = [];
+    this._shoppingList = []; 
+    this._seasons = [];
     this._currentFilter = {
       category: 'all',
       season: 'all',
@@ -40,7 +38,7 @@ export default class WardrobeModel extends Observable {
   }
 
   get shoppingList() {
-    return this._shoppingList;
+    return this._shoppingList; 
   }
 
   get seasons() {
@@ -49,10 +47,6 @@ export default class WardrobeModel extends Observable {
 
   get currentFilter() {
     return this._currentFilter;
-  }
-
-  get shoppingList() {
-    return this._shoppingList;
   }
 
   setCategories(categories) {
@@ -69,8 +63,7 @@ export default class WardrobeModel extends Observable {
   setShoppingList(items) {
     this._shoppingList = items;
     this._notify('shopping-list-updated', items);
-  }
-
+  } 
 
   addClothingItem(item) {
     const newItem = {
@@ -82,7 +75,7 @@ export default class WardrobeModel extends Observable {
     this._notify('clothing-item-added', newItem);
   }
 
-    addShoppingItem(item) {
+  addShoppingItem(item) {
     const newItem = {
       ...item,
       id: Date.now(),
@@ -102,16 +95,10 @@ export default class WardrobeModel extends Observable {
     this._notify('gallery-updated', images);
   }
 
-  setShoppingList(items) {
-    this._shoppingList = items;
-    this._notify('shopping-list-updated', items);
-  }
-
-   removeShoppingItem(itemId) {
+  removeShoppingItem(itemId) {
     this._shoppingList = this._shoppingList.filter(item => item.id !== itemId);
     this._notify('shopping-item-removed', itemId);
   }
-
 
   setSeasons(seasons) {
     this._seasons = seasons;
@@ -124,7 +111,6 @@ export default class WardrobeModel extends Observable {
     this._notify('filter-changed', this._currentFilter);
   }
   
-
   applyFilters() {
     let filtered = [...this._clothingItems];
 
