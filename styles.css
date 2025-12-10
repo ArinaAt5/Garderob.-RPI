@@ -1253,3 +1253,141 @@ body {
   height: 100%;
   object-fit: cover;
 }
+/* Стили для компонента загрузки */
+.loading-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.loading-view__container {
+  text-align: center;
+  padding: 40px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid #eaeaea;
+}
+
+.loading-view__spinner {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 20px;
+  position: relative;
+}
+
+.loading-view__spinner-circle {
+  width: 100%;
+  height: 100%;
+  border: 4px solid transparent;
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: loading-spin 1s linear infinite;
+}
+
+.loading-view__text {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #374151;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@keyframes loading-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Вариант для более простого спиннера (если нужен) */
+.loading-view__spinner--simple {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #7c3aed;
+  border-radius: 50%;
+  animation: loading-spin 1s linear infinite;
+}
+
+/* Сообщение об ошибке */
+.error {
+  max-width: 500px;
+  margin: 100px auto;
+  padding: 40px;
+  text-align: center;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid #eaeaea;
+}
+
+.error h2 {
+  color: #dc2626;
+  margin-bottom: 15px;
+}
+
+.error p {
+  color: #6b7280;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+.error button {
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.error button:hover {
+  background-color: #6d28d9;
+}
+.clothing-item-delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(220, 38, 38, 0.9);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 2;
+}
+
+.clothing-item-card:hover .clothing-item-delete-btn {
+  opacity: 1;
+}
+
+.clothing-item-delete-btn:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+.delete-icon {
+  width: 18px;
+  height: 18px;
+}

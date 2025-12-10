@@ -13,3 +13,16 @@ export const Season = {
   SUMMER: 'summer',
   AUTUMN: 'autumn'
 };
+
+export const UserAction = {
+  UPDATE_CLOTHING: 'UPDATE_CLOTHING',
+  ADD_CLOTHING: 'ADD_CLOTHING',
+  DELETE_CLOTHING: 'DELETE_CLOTHING',
+};
+
+export const UpdateType = {
+  INIT: 'INIT',
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};

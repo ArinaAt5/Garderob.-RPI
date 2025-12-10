@@ -8,13 +8,20 @@ const createCategoryTemplate = (category, isActive) => `
   </div>
 `;
 
-const createClothingItemTemplate = (item) => `
+const createClothingItemTemplate = (item, onDelete) => `
   <div class="clothing-item-card" data-id="${item.id}" data-category="${item.category}" data-season="${item.season}">
     <div class="clothing-item-image" style="background-image: url('${item.image || ''}')">
       ${!item.image ? '<div class="no-image">Изображение</div>' : ''}
       <div class="clothing-item-overlay">
         <span class="clothing-item-name">${item.name}</span>
         ${item.color ? `<span class="clothing-item-color">${item.color}</span>` : ''}
+        ${onDelete ? `
+          <button class="clothing-item-delete-btn" data-id="${item.id}" aria-label="Удалить">
+            <svg class="delete-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </button>
+        ` : ''}
       </div>
     </div>
     <div class="clothing-item-badge">
@@ -126,7 +133,7 @@ const getSeasonName = (seasonId) => {
   return seasons[seasonId] || seasonId;
 };
 
-const createCatalogTemplate = (categories, clothingItems, seasons, currentFilter) => `
+const createCatalogTemplate = (categories, clothingItems, seasons, currentFilter, onDelete) => `
   <section id="catalog" class="section catalog-section">
     <h2 class="section-title">
       Каталог Гардероба
@@ -156,7 +163,7 @@ const createCatalogTemplate = (categories, clothingItems, seasons, currentFilter
     <div class="clothing-items-container">
       <div class="clothing-items-grid" id="clothingItemsGrid">
         ${clothingItems.length > 0 
-          ? clothingItems.map(createClothingItemTemplate).join('')
+          ? clothingItems.map(item => createClothingItemTemplate(item, onDelete)).join('')
           : `
             <div class="no-items-message">
               <svg class="no-items-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,13 +181,14 @@ const createCatalogTemplate = (categories, clothingItems, seasons, currentFilter
 `;
 
 export default class CatalogComponent {
-  constructor(categories, clothingItems, seasons, currentFilter, onAddClick, onFilterChange) {
+  constructor(categories, clothingItems, seasons, currentFilter, onAddClick, onFilterChange, onDeleteItem = null) {
     this.categories = categories;
     this.clothingItems = clothingItems;
     this.seasons = seasons;
     this.currentFilter = currentFilter;
     this.onAddClick = onAddClick;
     this.onFilterChange = onFilterChange;
+    this.onDeleteItem = onDeleteItem;
     this.element = null;
   }
 
@@ -189,7 +197,8 @@ export default class CatalogComponent {
       this.categories, 
       this.clothingItems, 
       this.seasons, 
-      this.currentFilter
+      this.currentFilter,
+      this.onDeleteItem // передаем в шаблон
     );
   }
 
@@ -220,6 +229,18 @@ export default class CatalogComponent {
       card.addEventListener('click', () => {
         if (this.onFilterChange) {
           this.onFilterChange({ category: card.dataset.category });
+        }
+      });
+    });
+
+    // Кнопки удаления
+    const deleteButtons = this.element.querySelectorAll('.clothing-item-delete-btn');
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', (evt) => {
+        evt.stopPropagation(); // предотвращаем всплытие
+        const itemId = button.dataset.id;
+        if (this.onDeleteItem && itemId) {
+          this.onDeleteItem(itemId);
         }
       });
     });
@@ -261,9 +282,9 @@ export default class CatalogComponent {
           season: 'all', 
           searchQuery: '' 
         });
-        searchInput.value = '';
-        categoryFilter.value = 'all';
-        seasonFilter.value = 'all';
+        if (searchInput) searchInput.value = '';
+        if (categoryFilter) categoryFilter.value = 'all';
+        if (seasonFilter) seasonFilter.value = 'all';
       }
     });
 
@@ -278,7 +299,100 @@ export default class CatalogComponent {
           if (filterType === 'season') updates.season = 'all';
           if (filterType === 'search') {
             updates.searchQuery = '';
-            searchInput.value = '';
+            if (searchInput) searchInput.value = '';
+          }
+          this.onFilterChange(updates);
+        }
+      });
+    });
+  }
+
+  // Новый метод для обновления только фильтров
+  updateFilters(categories, seasons, currentFilter) {
+    this.categories = categories;
+    this.seasons = seasons;
+    this.currentFilter = currentFilter;
+    
+    // Обновляем элементы фильтров в DOM
+    const filterControls = this.element.querySelector('.catalog-filters');
+    if (filterControls) {
+      const newFilterControls = createElement(createFilterControlsTemplate(
+        categories, 
+        seasons, 
+        currentFilter, 
+        this.clothingItems.length
+      ));
+      filterControls.replaceWith(newFilterControls);
+      this.setFilterListeners(newFilterControls);
+    }
+  }
+
+  setFilterListeners(filterElement) {
+    // Назначаем обработчики для нового элемента фильтров
+    const searchInput = filterElement.querySelector('.search-input');
+    const categoryFilter = filterElement.querySelector('#categoryFilter');
+    const seasonFilter = filterElement.querySelector('#seasonFilter');
+    const resetButton = filterElement.querySelector('#resetFilters');
+    const removeButtons = filterElement.querySelectorAll('.remove-filter');
+
+    // Поиск с дебаунсом
+    let searchTimeout;
+    if (searchInput) {
+      searchInput.addEventListener('input', (evt) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          if (this.onFilterChange) {
+            this.onFilterChange({ searchQuery: evt.target.value });
+          }
+        }, 300);
+      });
+    }
+
+    // Фильтр по категориям
+    if (categoryFilter) {
+      categoryFilter.addEventListener('change', (evt) => {
+        if (this.onFilterChange) {
+          this.onFilterChange({ category: evt.target.value });
+        }
+      });
+    }
+
+    // Фильтр по сезонам
+    if (seasonFilter) {
+      seasonFilter.addEventListener('change', (evt) => {
+        if (this.onFilterChange) {
+          this.onFilterChange({ season: evt.target.value });
+        }
+      });
+    }
+
+    // Сброс фильтров
+    if (resetButton) {
+      resetButton.addEventListener('click', () => {
+        if (this.onFilterChange) {
+          this.onFilterChange({ 
+            category: 'all', 
+            season: 'all', 
+            searchQuery: '' 
+          });
+          if (searchInput) searchInput.value = '';
+          if (categoryFilter) categoryFilter.value = 'all';
+          if (seasonFilter) seasonFilter.value = 'all';
+        }
+      });
+    }
+
+    // Удаление активных фильтров
+    removeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filterType = btn.dataset.filter;
+        if (this.onFilterChange) {
+          const updates = {};
+          if (filterType === 'category') updates.category = 'all';
+          if (filterType === 'season') updates.season = 'all';
+          if (filterType === 'search') {
+            updates.searchQuery = '';
+            if (searchInput) searchInput.value = '';
           }
           this.onFilterChange(updates);
         }

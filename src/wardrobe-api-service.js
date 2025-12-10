@@ -1,20 +1,42 @@
-export default class WardrobeApiService {
-  constructor() {
-    // Здесь можно добавить логику работы с API
+import ApiService from '../src/framework/view/api-service.js';
+
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+export default class WardrobeApiService extends ApiService {
+  get clothings() {
+    return this._load({ url: 'clothing' })
+      .then(ApiService.parseResponse);
   }
 
-  getCategories() {
-    // Запрос к API для получения категорий
-    return Promise.resolve([]);
+  addClothing(clothing) {
+    return this._load({
+      url: 'clothing',
+      method: Method.POST,
+      body: JSON.stringify(clothing),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+      .then(ApiService.parseResponse);
   }
 
-  getClothingItems() {
-    // Запрос к API для получения одежды
-    return Promise.resolve([]);
+  updateClothing(clothing) {
+    return this._load({
+      url: `clothing/${clothing.id}`,
+      method: Method.PUT,
+      body: JSON.stringify(clothing),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+      .then(ApiService.parseResponse);
   }
 
-  addClothingItem(item) {
-    // Отправка новой одежды на сервер
-    return Promise.resolve(item);
+  deleteClothing(id) {
+    return this._load({
+      url: `clothing/${id}`,
+      method: Method.DELETE,
+    });
   }
 }

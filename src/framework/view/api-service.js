@@ -1,44 +1,38 @@
 export default class ApiService {
-  constructor(baseURL = 'https://6931cf4611a8738467d0a56b.mockapi.io') {
-    this._baseURL = baseURL;
+  constructor(endPoint) {
+    this._endPoint = endPoint;
   }
 
-  async _fetch(path, options = {}) {
-    const response = await fetch(`${this._baseURL}${path}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      ...options
-    });
+  async _load({
+    url,
+    method = 'GET',
+    body = null,
+    headers = new Headers(),
+  }) {
+    const response = await fetch(
+      `${this._endPoint}/${url}`,
+      { method, body, headers },
+    );
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    try {
+      ApiService.checkStatus(response);
+      return response;
+    } catch (err) {
+      ApiService.catchError(err);
     }
+  }
 
+  static parseResponse(response) {
     return response.json();
   }
 
-  get(path) {
-    return this._fetch(path);
+  static checkStatus(response) {
+    if (!response.ok) {
+      throw new Error(`${response.status}: ${response.statusText}`);
+    }
   }
 
-  post(path, data) {
-    return this._fetch(path, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  put(path, data) {
-    return this._fetch(path, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  }
-
-  delete(path) {
-    return this._fetch(path, {
-      method: 'DELETE',
-    });
+  static catchError(err) {
+    throw err;
   }
 }

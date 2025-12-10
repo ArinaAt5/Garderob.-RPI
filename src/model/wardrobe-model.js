@@ -1,8 +1,13 @@
 import Observable from '../framework/observable.js';
+import { UserAction, UpdateType } from '../const.js';
 
 export default class WardrobeModel extends Observable {
-  constructor() {
+  #wardrobeApiService = null;
+  
+  constructor({ wardrobeApiService }) {
     super();
+    this.#wardrobeApiService = wardrobeApiService;
+    
     this._categories = [];
     this._clothingItems = [];
     this._filteredClothingItems = [];
@@ -15,6 +20,20 @@ export default class WardrobeModel extends Observable {
       season: 'all',
       searchQuery: ''
     };
+  }
+
+  async init() {
+    try {
+      const clothing = await this.#wardrobeApiService.clothings;
+      this._clothingItems = clothing;
+      this._filteredClothingItems = clothing;
+      this._notify(UpdateType.INIT);
+    } catch (err) {
+      this._clothingItems = [];
+      this._filteredClothingItems = [];
+      console.error('Ошибка при загрузке данных:', err);
+      this._notify(UpdateType.INIT);
+    }
   }
 
   get categories() {
@@ -65,14 +84,22 @@ export default class WardrobeModel extends Observable {
     this._notify('shopping-list-updated', items);
   } 
 
-  addClothingItem(item) {
+  async addClothingItem(item) {
     const newItem = {
       ...item,
-      id: Date.now()
+      id: Date.now().toString()
     };
-    this._clothingItems = [...this._clothingItems, newItem];
-    this.applyFilters();
-    this._notify('clothing-item-added', newItem);
+    
+    try {
+      const createdItem = await this.#wardrobeApiService.addClothing(newItem);
+      this._clothingItems = [...this._clothingItems, createdItem];
+      this.applyFilters();
+      this._notify(UserAction.ADD_CLOTHING, createdItem);
+      return createdItem;
+    } catch (err) {
+      console.error('Ошибка при добавлении одежды:', err);
+      throw err;
+    }
   }
 
   addShoppingItem(item) {
@@ -83,6 +110,39 @@ export default class WardrobeModel extends Observable {
     };
     this._shoppingList = [...this._shoppingList, newItem];
     this._notify('shopping-item-added', newItem);
+  }
+
+  async updateClothingItem(updatedItem) {
+    try {
+      const result = await this.#wardrobeApiService.updateClothing(updatedItem);
+      const index = this._clothingItems.findIndex(item => item.id === updatedItem.id);
+      
+      if (index !== -1) {
+        this._clothingItems = [
+          ...this._clothingItems.slice(0, index),
+          result,
+          ...this._clothingItems.slice(index + 1)
+        ];
+        this.applyFilters();
+        this._notify(UserAction.UPDATE_CLOTHING, result);
+      }
+      return result;
+    } catch (err) {
+      console.error('Ошибка при обновлении одежды:', err);
+      throw err;
+    }
+  }
+
+  async deleteClothingItem(itemId) {
+    try {
+      await this.#wardrobeApiService.deleteClothing(itemId);
+      this._clothingItems = this._clothingItems.filter(item => item.id !== itemId);
+      this.applyFilters();
+      this._notify(UserAction.DELETE_CLOTHING, itemId);
+    } catch (err) {
+      console.error('Ошибка при удалении одежды:', err);
+      throw err;
+    }
   }
 
   setOutfits(outfits) {
