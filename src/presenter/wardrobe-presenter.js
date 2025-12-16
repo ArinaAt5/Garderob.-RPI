@@ -155,8 +155,7 @@ export default class WardrobePresenter {
     this.showNotification('Вещь удалена из шопинг-листа');
   }
 
-  handleModelChange(event, payload) {
-  // Если контейнер не установлен, игнорируем все события, кроме INIT
+ handleModelChange(event, payload) {
   if (!this.container && event !== UpdateType.INIT) {
     console.warn(`Игнорируем событие ${event}, так как контейнер не установлен`);
     return;
@@ -178,19 +177,17 @@ export default class WardrobePresenter {
     case UserAction.UPDATE_CLOTHING:
     case UserAction.DELETE_CLOTHING:
       if (this.container) {
-        this.updateCatalog();
+        this.updateCatalog(); // Это обновляет весь каталог
       }
       break;
       
     // Обработка фильтрации
     case 'filtered-items-updated':
-    case 'filter-changed':
-      if (this.container) {
-        this.updateCatalog();
-      }
       break;
       
-    // Обработка клиентских изменений
+    case 'filter-changed':
+      break;
+
     case 'clothing-item-added':
       if (this.container) {
         this.updateCatalog();
@@ -233,7 +230,6 @@ export default class WardrobePresenter {
       console.log(`Необработанное событие: ${event}`, payload);
   }
 }
-
   updateCatalog() {
     if (!this.catalogComponent || !this.container) return;
     

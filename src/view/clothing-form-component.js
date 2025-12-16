@@ -1,28 +1,25 @@
 import { createElement } from '../framework/render.js';
 
-const createClothingFormTemplate = () => `
-  <div class="modal-overlay" id="addClothingModal">
+const createClothingFormTemplate = (categories = [], seasons = []) => `
+  <div class="modal-overlay clothing-form-modal" id="addClothingModal" style="display: none;">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Добавить новую одежду</h3>
-        <button class="modal-close" id="closeModal">&times;</button>
+        <button class="modal-close" id="closeModal" type="button">&times;</button>
       </div>
       <form class="add-clothing-form" id="addClothingForm">
         <div class="form-group">
           <label for="clothingName">Название вещи *</label>
-          <input type="text" id="clothingName" required placeholder="Например: Синий джинсовый жакет">
+          <input type="text" id="clothingName" required placeholder="Например: Кофта">
         </div>
         
         <div class="form-group">
           <label for="clothingCategory">Категория *</label>
           <select id="clothingCategory" required>
             <option value="">Выберите категорию</option>
-            <option value="outerwear">Верхняя одежда</option>
-            <option value="sweaters">Свитеры</option>
-            <option value="tshirts">Футболки</option>
-            <option value="jeans">Джинсы / Брюки</option>
-            <option value="shoes">Обувь</option>
-            <option value="accessories">Аксессуары и Сумки</option>
+            ${categories.map(category => `
+              <option value="${category.id}">${category.name}</option>
+            `).join('')}
           </select>
         </div>
         
@@ -35,15 +32,14 @@ const createClothingFormTemplate = () => `
           <label for="clothingSeason">Сезон</label>
           <select id="clothingSeason">
             <option value="">Любой сезон</option>
-            <option value="winter">Зима</option>
-            <option value="spring">Весна</option>
-            <option value="summer">Лето</option>
-            <option value="autumn">Осень</option>
+            ${seasons.map(season => `
+              <option value="${season.id}">${season.name}</option>
+            `).join('')}
           </select>
         </div>
         
         <div class="form-group">
-          <label for="clothingImage">Ссылка на изображение (опционально)</label>
+          <label for="clothingImage">Ссылка на изображение </label>
           <input type="url" id="clothingImage" placeholder="https://example.com/image.jpg">
         </div>
         
@@ -57,14 +53,16 @@ const createClothingFormTemplate = () => `
 `;
 
 export default class ClothingFormComponent {
-  constructor(onFormSubmit, onClose) {
+  constructor(categories = [], seasons = [], onFormSubmit, onClose) {
+    this.categories = categories;
+    this.seasons = seasons;
     this.onFormSubmit = onFormSubmit;
     this.onClose = onClose;
     this.element = null;
   }
 
   getTemplate() {
-    return createClothingFormTemplate();
+    return createClothingFormTemplate(this.categories, this.seasons);
   }
 
   getElement() {
@@ -81,37 +79,84 @@ export default class ClothingFormComponent {
     const cancelBtn = this.element.querySelector('#cancelAdd');
     const modal = this.element;
 
-    form.addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      const formData = {
-        clothingName: form.querySelector('#clothingName').value,
-        clothingCategory: form.querySelector('#clothingCategory').value,
-        clothingColor: form.querySelector('#clothingColor').value,
-        clothingSeason: form.querySelector('#clothingSeason').value,
-        clothingImage: form.querySelector('#clothingImage').value
-      };
+    if (form) {
+      form.addEventListener('submit', (evt) => {
+        evt.preventDefault();
+        this.handleSubmit();
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => this.closeModal());
+    }
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', () => this.closeModal());
+    }
+
+    if (modal) {
+      modal.addEventListener('click', (evt) => {
+        if (evt.target === modal) {
+          this.closeModal();
+        }
+      });
+    }
+  }
+
+  handleSubmit() {
+    const form = this.element.querySelector('#addClothingForm');
+    if (!form) return;
+
+    const formData = {
+      clothingName: form.querySelector('#clothingName')?.value || '',
+      clothingCategory: form.querySelector('#clothingCategory')?.value || '',
+      clothingColor: form.querySelector('#clothingColor')?.value || '',
+      clothingSeason: form.querySelector('#clothingSeason')?.value || '',
+      clothingImage: form.querySelector('#clothingImage')?.value || ''
+    };
+
+    // Валидация
+    if (!formData.clothingName.trim() || !formData.clothingCategory) {
+      alert('Пожалуйста, заполните обязательные поля (Название и Категория)');
+      return;
+    }
+
+    if (this.onFormSubmit) {
       this.onFormSubmit(formData);
-    });
-
-    closeBtn.addEventListener('click', () => this.closeModal());
-    cancelBtn.addEventListener('click', () => this.closeModal());
-
-    modal.addEventListener('click', (evt) => {
-      if (evt.target === modal) {
-        this.closeModal();
-      }
-    });
+      this.closeModal();
+    }
   }
 
   openModal() {
-    this.element.classList.add('active');
+    if (this.element) {
+      this.element.style.display = 'block';
+      setTimeout(() => {
+        this.element.classList.add('active');
+      }, 10);
+      
+      // Фокус на первое поле
+      const nameInput = this.element.querySelector('#clothingName');
+      if (nameInput) {
+        nameInput.focus();
+      }
+    }
   }
 
   closeModal() {
-    this.element.classList.remove('active');
-    this.element.querySelector('#addClothingForm').reset();
-    if (this.onClose) {
-      this.onClose();
+    if (this.element) {
+      this.element.classList.remove('active');
+      setTimeout(() => {
+        this.element.style.display = 'none';
+      }, 300);
+      
+      const form = this.element.querySelector('#addClothingForm');
+      if (form) {
+        form.reset();
+      }
+      
+      // if (this.onClose) {
+      //   this.onClose();
+      // }
     }
   }
 

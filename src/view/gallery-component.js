@@ -10,7 +10,8 @@ const createGalleryTemplate = (images) => `
       Фотогалерея Образов
     </h2>
     <p class="section-description">
-      Здесь сохраняются любимые и удачные комбинации.
+      Здесь сохраняются образы для вдохновения.
+      
     </p>
 
     <div class="gallery-grid">

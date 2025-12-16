@@ -201,4 +201,25 @@ export default class WardrobeModel extends Observable {
     this._filteredClothingItems = filtered;
     this._notify('filtered-items-updated', filtered);
   }
+  async addClothingItem(item) {
+  const newItem = {
+    ...item,
+    id: Date.now().toString()
+  };
+  
+  
+  try {
+    const createdItem = await this.#wardrobeApiService.addClothing(newItem);
+    this._clothingItems = [...this._clothingItems, createdItem];
+
+  } catch (err) {
+    this._clothingItems = [...this._clothingItems, newItem];
+  }
+
+  this.applyFilters();
+  
+  this._notify(UserAction.ADD_CLOTHING, newItem);
+
+  return newItem;
+}
 }

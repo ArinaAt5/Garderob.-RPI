@@ -103,28 +103,31 @@ export const seasons = [
 export const shoppingList = [
   {
     id: 1,
-    name: 'Белая рубашка (классика)',
-    store: 'Zara / Massimo Dutti',
+    name: 'Белая рубашка',
+    store: 'Lime',
     category: 'Верх',
     priority: 'high',
     notes: 'Искать классический крой',
-    addedAt: '2024-01-15T10:30:00Z'
+    addedAt: '2024-01-15T10:30:00Z',
+    image: 'images/shop/1.jpg'
   },
   {
     id: 2,
     name: 'Теплый шарф (бежевый)',
-    store: 'H&M / 12 Storeez',
+    store: 'Gloria jeans',
     category: 'Аксессуары',
     priority: 'medium',
-    addedAt: '2024-01-10T14:20:00Z'
+    addedAt: '2024-01-10T14:20:00Z',
+    image: 'images/shop/2.jpg'
   },
   {
     id: 3,
-    name: 'Кожаные туфли',
-    store: 'Massimo Dutti',
+    name: 'Вечерние туфли',
+    store: 'Monro',
     category: 'Обувь',
     priority: 'high',
-    notes: 'Черные, размер 42',
-    addedAt: '2024-01-05T11:15:00Z'
+    notes: 'Черные, размер 38',
+    addedAt: '2024-01-05T11:15:00Z',
+    image: 'images/shop/3.jpg'
   }
 ];
