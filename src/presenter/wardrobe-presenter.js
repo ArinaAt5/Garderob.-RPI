@@ -155,81 +155,92 @@ export default class WardrobePresenter {
     this.showNotification('Вещь удалена из шопинг-листа');
   }
 
- handleModelChange(event, payload) {
-  if (!this.container && event !== UpdateType.INIT) {
-    console.warn(`Игнорируем событие ${event}, так как контейнер не установлен`);
-    return;
-  }
-  
-  switch (event) {
-    // Инициализация приложения
-    case UpdateType.INIT:
-      // Если контейнер установлен, рендерим компоненты
-      if (this.container) {
-        this.renderComponents();
-      } else {
-        console.warn('Получено событие INIT, но контейнер еще не установлен');
-      }
-      break;
-      
-    // Обработка событий от API
-    case UserAction.ADD_CLOTHING:
-    case UserAction.UPDATE_CLOTHING:
-    case UserAction.DELETE_CLOTHING:
-      if (this.container) {
-        this.updateCatalog(); // Это обновляет весь каталог
-      }
-      break;
-      
-    // Обработка фильтрации
-    case 'filtered-items-updated':
-      break;
-      
-    case 'filter-changed':
-      break;
+  handleModelChange(event, payload) {
+    if (!this.container && event !== UpdateType.INIT) {
+      console.warn(`Игнорируем событие ${event}, так как контейнер не установлен`);
+      return;
+    }
+    
+    switch (event) {
+      // Инициализация приложения
+      case UpdateType.INIT:
+        if (this.container) {
+          this.renderComponents();
+        } else {
+          console.warn('Получено событие INIT, но контейнер еще не установлен');
+        }
+        break;
+        
+      // Обработка событий от API
+      case UserAction.ADD_CLOTHING:
+      case UserAction.UPDATE_CLOTHING:
+      case UserAction.DELETE_CLOTHING:
+        if (this.container) {
+          this.updateCatalog();
+        }
+        break;
+        
+      // Обработка фильтрации - ИСПРАВЛЕНО: теперь обновляет отфильтрованные данные
+      case 'filtered-items-updated':
+        if (this.container && this.catalogComponent) {
+          this.catalogComponent.updateClothingItems(payload);
+        }
+        break;
+        
+      case 'filter-changed':
+        // Обновляем только фильтры, одежда обновится через filtered-items-updated
+        if (this.container && this.catalogComponent) {
+          this.catalogComponent.updateFilters(
+            this.model.categories,
+            this.model.seasons,
+            this.model.currentFilter
+          );
+        }
+        break;
 
-    case 'clothing-item-added':
-      if (this.container) {
-        this.updateCatalog();
-      }
-      break;
-      
-    case 'shopping-item-added':
-    case 'shopping-item-removed':
-    case 'shopping-list-updated':
-      if (this.container) {
-        this.updateShoppingList();
-      }
-      break;
-      
-    // Обработка изменений категорий, сезонов и т.д.
-    case 'categories-updated':
-    case 'seasons-updated':
-      if (this.container && this.catalogComponent) {
-        this.catalogComponent.updateFilters(
-          this.model.categories,
-          this.model.seasons,
-          this.model.currentFilter
-        );
-      }
-      break;
-      
-    case 'outfits-updated':
-      if (this.container) {
-        this.updateOutfits();
-      }
-      break;
-      
-    case 'gallery-updated':
-      if (this.container) {
-        this.updateGallery();
-      }
-      break;
+      case 'clothing-item-added':
+        if (this.container) {
+          this.updateCatalog();
+        }
+        break;
+        
+      case 'shopping-item-added':
+      case 'shopping-item-removed':
+      case 'shopping-list-updated':
+        if (this.container) {
+          this.updateShoppingList();
+        }
+        break;
+        
+      // Обработка изменений категорий, сезонов и т.д.
+      case 'categories-updated':
+      case 'seasons-updated':
+        if (this.container && this.catalogComponent) {
+          this.catalogComponent.updateFilters(
+            this.model.categories,
+            this.model.seasons,
+            this.model.currentFilter
+          );
+        }
+        break;
+        
+      case 'outfits-updated':
+        if (this.container) {
+          this.updateOutfits();
+        }
+        break;
+        
+      case 'gallery-updated':
+        if (this.container) {
+          this.updateGallery();
+        }
+        break;
 
-    default:
-      console.log(`Необработанное событие: ${event}`, payload);
+      default:
+        console.log(`Необработанное событие: ${event}`, payload);
+    }
   }
-}
+
   updateCatalog() {
     if (!this.catalogComponent || !this.container) return;
     

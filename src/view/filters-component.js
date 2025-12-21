@@ -89,48 +89,42 @@ export default class FiltersComponent {
   }
 
   setListeners() {
-    // Поиск с дебаунсом
-    const searchInput = this.element.querySelector('#searchInput');
-    let searchTimeout;
-    
-    searchInput.addEventListener('input', (evt) => {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        this.onFilterChange({
-          searchQuery: evt.target.value
-        });
-      }, 300);
+  // Сохраняем текущие значения фильтров
+  let currentCategory = this.currentFilter.category;
+  let currentSeason = this.currentFilter.season;
+  let currentSearchQuery = this.currentFilter.searchQuery;
+
+  // Поиск с дебаунсом
+  const searchInput = this.element.querySelector('#searchInput');
+  let searchTimeout;
+  
+  searchInput.addEventListener('input', (evt) => {
+    clearTimeout(searchTimeout);
+    currentSearchQuery = evt.target.value;
+    searchTimeout = setTimeout(() => {
+      // Передаем ВСЕ параметры
+      this.onFilterChange(currentCategory, currentSeason, currentSearchQuery);
+    }, 300);
+  });
+
+  // Фильтры по категориям
+  const categoryButtons = this.element.querySelectorAll('[data-category]');
+  categoryButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentCategory = btn.dataset.category;
+      // Передаем ВСЕ параметры
+      this.onFilterChange(currentCategory, currentSeason, currentSearchQuery);
     });
+  });
 
-    // Фильтры по категориям
-    const categoryButtons = this.element.querySelectorAll('[data-category]');
-    categoryButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        this.onFilterChange({
-          category: btn.dataset.category
-        });
-      });
+  // Фильтры по сезонам
+  const seasonButtons = this.element.querySelectorAll('[data-season]');
+  seasonButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentSeason = btn.dataset.season;
+      // Передаем ВСЕ параметры
+      this.onFilterChange(currentCategory, currentSeason, currentSearchQuery);
     });
-
-    // Фильтры по сезонам
-    const seasonButtons = this.element.querySelectorAll('[data-season]');
-    seasonButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        this.onFilterChange({
-          season: btn.dataset.season
-        });
-      });
-    });
-  }
-
-  updateStats(count) {
-    const countElement = this.element.querySelector('#itemsCount');
-    if (countElement) {
-      countElement.textContent = count;
-    }
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  });
+}
 }

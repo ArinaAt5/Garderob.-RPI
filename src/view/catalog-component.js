@@ -1,5 +1,30 @@
 import { createElement } from '../framework/render.js';
 
+// Вспомогательные функции вынесены наверх
+const getCategoryName = (categoryId) => {
+  const categories = {
+    'outerwear': 'Верхняя одежда',
+    'sweaters': 'Свитеры',
+    'tshirts': 'Футболки',
+    'jeans': 'Джинсы / Брюки',
+    'shoes': 'Обувь',
+    'accessories': 'Аксессуары'
+  };
+  return categories[categoryId] || categoryId;
+};
+
+const getSeasonName = (seasonId) => {
+  const seasons = {
+    'all': 'Все сезоны',
+    'summer': 'Лето',
+    'winter': 'Зима',
+    'spring-autumn': 'Весна-Осень',
+    'all-season': 'Всесезонные'
+  };
+  return seasons[seasonId] || seasonId;
+};
+
+// Шаблоны как функции
 const createCategoryTemplate = (category, isActive) => `
   <div class="category-card ${isActive ? 'active' : ''}" data-category="${category.id}">
     <div class="category-image category-${category.id}">
@@ -110,28 +135,16 @@ const createFilterControlsTemplate = (categories, seasons, currentFilter, itemsC
   </div>
 `;
 
-const getCategoryName = (categoryId) => {
-  const categories = {
-    'outerwear': 'Верхняя одежда',
-    'sweaters': 'Свитеры',
-    'tshirts': 'Футболки',
-    'jeans': 'Джинсы / Брюки',
-    'shoes': 'Обувь',
-    'accessories': 'Аксессуары'
-  };
-  return categories[categoryId] || categoryId;
-};
-
-const getSeasonName = (seasonId) => {
-  const seasons = {
-    'all': 'Все сезоны',
-    'summer': 'Лето',
-    'winter': 'Зима',
-    'spring-autumn': 'Весна-Осень',
-    'all-season': 'Всесезонные'
-  };
-  return seasons[seasonId] || seasonId;
-};
+const createEmptyStateTemplate = () => `
+  <div class="no-items-message">
+    <svg class="no-items-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <h3>Нет вещей по выбранным фильтрам</h3>
+    <p>Попробуйте изменить параметры поиска или добавьте новую одежду</p>
+    <button class="btn btn-primary" id="addFromEmpty">Добавить одежду</button>
+  </div>
+`;
 
 const createCatalogTemplate = (categories, clothingItems, seasons, currentFilter, onDelete) => `
   <section id="catalog" class="section catalog-section">
@@ -164,16 +177,7 @@ const createCatalogTemplate = (categories, clothingItems, seasons, currentFilter
       <div class="clothing-items-grid" id="clothingItemsGrid">
         ${clothingItems.length > 0 
           ? clothingItems.map(item => createClothingItemTemplate(item, onDelete)).join('')
-          : `
-            <div class="no-items-message">
-              <svg class="no-items-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <h3>Нет вещей по выбранным фильтрам</h3>
-              <p>Попробуйте изменить параметры поиска или добавьте новую одежду</p>
-              <button class="btn btn-primary" id="addFromEmpty">Добавить одежду</button>
-            </div>
-          `
+          : createEmptyStateTemplate()
         }
       </div>
     </div>
@@ -198,7 +202,7 @@ export default class CatalogComponent {
       this.clothingItems, 
       this.seasons, 
       this.currentFilter,
-      this.onDeleteItem // передаем в шаблон
+      this.onDeleteItem
     );
   }
 
@@ -234,59 +238,58 @@ export default class CatalogComponent {
     });
 
     // Кнопки удаления
-    const deleteButtons = this.element.querySelectorAll('.clothing-item-delete-btn');
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', (evt) => {
-        evt.stopPropagation(); // предотвращаем всплытие
-        const itemId = button.dataset.id;
-        if (this.onDeleteItem && itemId) {
-          this.onDeleteItem(itemId);
-        }
-      });
-    });
+    this.setDeleteListeners();
 
     // Поиск с дебаунсом
     const searchInput = this.element.querySelector('.search-input');
     let searchTimeout;
-    searchInput.addEventListener('input', (evt) => {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        if (this.onFilterChange) {
-          this.onFilterChange({ searchQuery: evt.target.value });
-        }
-      }, 300);
-    });
+    if (searchInput) {
+      searchInput.addEventListener('input', (evt) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          if (this.onFilterChange) {
+            this.onFilterChange({ searchQuery: evt.target.value });
+          }
+        }, 300);
+      });
+    }
 
     // Фильтр по категориям
     const categoryFilter = this.element.querySelector('#categoryFilter');
-    categoryFilter.addEventListener('change', (evt) => {
-      if (this.onFilterChange) {
-        this.onFilterChange({ category: evt.target.value });
-      }
-    });
+    if (categoryFilter) {
+      categoryFilter.addEventListener('change', (evt) => {
+        if (this.onFilterChange) {
+          this.onFilterChange({ category: evt.target.value });
+        }
+      });
+    }
 
     // Фильтр по сезонам
     const seasonFilter = this.element.querySelector('#seasonFilter');
-    seasonFilter.addEventListener('change', (evt) => {
-      if (this.onFilterChange) {
-        this.onFilterChange({ season: evt.target.value });
-      }
-    });
+    if (seasonFilter) {
+      seasonFilter.addEventListener('change', (evt) => {
+        if (this.onFilterChange) {
+          this.onFilterChange({ season: evt.target.value });
+        }
+      });
+    }
 
     // Сброс фильтров
     const resetButton = this.element.querySelector('#resetFilters');
-    resetButton.addEventListener('click', () => {
-      if (this.onFilterChange) {
-        this.onFilterChange({ 
-          category: 'all', 
-          season: 'all', 
-          searchQuery: '' 
-        });
-        if (searchInput) searchInput.value = '';
-        if (categoryFilter) categoryFilter.value = 'all';
-        if (seasonFilter) seasonFilter.value = 'all';
-      }
-    });
+    if (resetButton) {
+      resetButton.addEventListener('click', () => {
+        if (this.onFilterChange) {
+          this.onFilterChange({ 
+            category: 'all', 
+            season: 'all', 
+            searchQuery: '' 
+          });
+          if (searchInput) searchInput.value = '';
+          if (categoryFilter) categoryFilter.value = 'all';
+          if (seasonFilter) seasonFilter.value = 'all';
+        }
+      });
+    }
 
     // Удаление активных фильтров
     const removeButtons = this.element.querySelectorAll('.remove-filter');
@@ -302,6 +305,19 @@ export default class CatalogComponent {
             if (searchInput) searchInput.value = '';
           }
           this.onFilterChange(updates);
+        }
+      });
+    });
+  }
+
+  setDeleteListeners() {
+    const deleteButtons = this.element.querySelectorAll('.clothing-item-delete-btn');
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', (evt) => {
+        evt.stopPropagation();
+        const itemId = button.dataset.id;
+        if (this.onDeleteItem && itemId) {
+          this.onDeleteItem(itemId);
         }
       });
     });
@@ -324,6 +340,39 @@ export default class CatalogComponent {
       ));
       filterControls.replaceWith(newFilterControls);
       this.setFilterListeners(newFilterControls);
+    }
+  }
+
+  // Новый метод для обновления списка одежды
+  updateClothingItems(clothingItems) {
+    this.clothingItems = clothingItems;
+    
+    // Обновляем сетку одежды
+    const clothingGrid = this.element.querySelector('#clothingItemsGrid');
+    if (clothingGrid) {
+      if (clothingItems.length > 0) {
+        const newItemsHTML = clothingItems.map(item => 
+          createClothingItemTemplate(item, this.onDeleteItem)
+        ).join('');
+        clothingGrid.innerHTML = newItemsHTML;
+      } else {
+        clothingGrid.innerHTML = createEmptyStateTemplate();
+        
+        // Добавляем слушатель для кнопки в пустом состоянии
+        const addFromEmpty = clothingGrid.querySelector('#addFromEmpty');
+        if (addFromEmpty && this.onAddClick) {
+          addFromEmpty.addEventListener('click', this.onAddClick);
+        }
+      }
+      
+      // Обновляем счетчик в фильтрах
+      const statsCount = this.element.querySelector('.stats-count');
+      if (statsCount) {
+        statsCount.textContent = `Найдено: ${clothingItems.length} вещей`;
+      }
+      
+      // Обновляем слушатели для новых кнопок удаления
+      this.setDeleteListeners();
     }
   }
 

@@ -222,4 +222,60 @@ export default class WardrobeModel extends Observable {
 
   return newItem;
 }
+_normalizeSeason(season) {
+  if (!season) return '';
+  
+  const seasonMap = {
+    // Русские -> английские ID
+    'зима': 'winter',
+    'лето': 'summer',
+    'весна': 'spring-autumn',
+    'осень': 'spring-autumn',
+    'весна-осень': 'spring-autumn',
+    'всесезонные': 'all-season',
+    'всесезонный': 'all-season',
+    
+    // Английские для надежности
+    'winter': 'winter',
+    'summer': 'summer',
+    'spring': 'spring-autumn',
+    'autumn': 'spring-autumn',
+    'spring-autumn': 'spring-autumn',
+    'all-season': 'all-season'
+  };
+  
+  return seasonMap[season.toLowerCase()] || '';
+}
+
+applyFilters() {
+  let filtered = [...this._clothingItems];
+
+  // Фильтрация по категории
+  if (this._currentFilter.category !== 'all') {
+    filtered = filtered.filter(item => 
+      item.category === this._currentFilter.category
+    );
+  }
+
+  // ФИКС: Используем нормализацию
+  if (this._currentFilter.season !== 'all') {
+    filtered = filtered.filter(item => {
+      if (!item.season) return false;
+      const normalizedSeason = this._normalizeSeason(item.season);
+      return normalizedSeason === this._currentFilter.season;
+    });
+  }
+
+  // Поиск по названию и цвету
+  if (this._currentFilter.searchQuery.trim() !== '') {
+    const query = this._currentFilter.searchQuery.toLowerCase();
+    filtered = filtered.filter(item => 
+      item.name.toLowerCase().includes(query) ||
+      (item.color && item.color.toLowerCase().includes(query))
+    );
+  }
+
+  this._filteredClothingItems = filtered;
+  this._notify('filtered-items-updated', filtered);
+}
 }
